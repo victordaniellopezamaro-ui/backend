@@ -1,0 +1,55 @@
+📋 GUÍA COMPLETA DE COMANDOS
+🔧 PASO 1: INSTALAR DEPENDENCIAS
+🗄️ PASO 2: EJECUTAR MIGRACIONES (Crear todas las tablas)
+Este comando creará automáticamente todas las tablas en tu base de datos PostgreSQL de Render.
+✅ PASO 3: VERIFICAR ESTADO DE MIGRACIONES (Opcional)
+Este comando te muestra qué migraciones se han ejecutado y cuáles están pendientes.
+🚀 PASO 4: INICIAR EL SERVIDOR
+Opción A: Modo Desarrollo (con auto-reload)
+Opción B: Modo Producción
+🧪 PASO 5: VERIFICAR QUE TODO FUNCIONA
+Abre otra terminal y ejecuta estos comandos para verificar:
+Health Check (Verificar que el servidor responde)
+Ver Bookmakers
+Ver Estado de Conexiones WebSocket
+Ver Logos Disponibles
+🌐 PASO 6: ABRIR EL DASHBOARD WEB
+Abre tu navegador y ve a:
+
+
+
+npm install
+npm run migrate
+npm run migrate:status
+npm run dev
+
+
+
+# 1. Instalar dependencias
+npm install
+
+# 2. Ejecutar migraciones (crear tablas)
+npm run migrate
+
+# 3. Iniciar servidor en modo desarrollo
+npm run dev
+
+
+
+# 1️⃣ Instalar todo
+npm install
+
+# 2️⃣ Crear tablas en PostgreSQL
+npm run migrate
+
+# 3️⃣ Verificar que las tablas se crearon
+npm run migrate:status
+
+# 4️⃣ Iniciar servidor
+npm run dev
+
+# 5️⃣ En otra terminal, verificar que funciona
+curl http://localhost:3001/api/health
+
+# 6️⃣ Abrir navegador
+start http://localhost:3001
