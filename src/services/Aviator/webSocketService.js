@@ -15,6 +15,7 @@ class WebSocketService {
     this.isResetting = false;
     this.savedRounds = new Set(); // Control de duplicados
     this.pendingRounds = new Map(); // Rondas pendientes de guardar
+    this.savingInProgress = new Map(); // Control de guardados en progreso para evitar race conditions
     this.debugMode = process.env.DEBUG_MODE === 'true' || false; // Modo debug
     this.healthCheckInterval = null; // Intervalo de health check
     this.bookmakersHealth = new Map(); // Estado de salud de cada bookmaker
@@ -29,7 +30,8 @@ class WebSocketService {
     // Limpiar rondas guardadas cada 10 minutos para evitar acumulación
     setInterval(() => {
       this.savedRounds.clear();
-      console.log('[WebSocketService] 🧹 Limpiando cache de rondas guardadas');
+      this.savingInProgress.clear(); // También limpiar guardados en progreso
+      console.log('[WebSocketService] 🧹 Limpiando cache de rondas guardadas y guardados en progreso');
     }, 10 * 60 * 1000);
     
     try {
@@ -679,8 +681,10 @@ class WebSocketService {
       console.warn(`[SAVE:${bookmaker_id}] ⚠️ roundId generado: ${roundData.roundId}`);
     }
     
-    // CONTROL DE DUPLICADOS: Verificar si ya se guardó esta ronda
+    // CONTROL DE DUPLICADOS MEJORADO: Verificar si ya se guardó O está en proceso de guardarse
     const roundKey = `${bookmaker_id}_${roundData.roundId}`;
+    
+    // Verificar si ya está guardada en memoria
     if (this.savedRounds.has(roundKey)) {
       if (this.debugMode) {
         console.log(`[SAVE:${bookmaker_id}] ⚠️ Ronda ${roundData.roundId} ya fue guardada, omitiendo duplicado`);
@@ -688,10 +692,23 @@ class WebSocketService {
       return;
     }
     
+    // Verificar si está en proceso de guardarse (evitar race conditions)
+    if (this.savingInProgress.has(roundKey)) {
+      if (this.debugMode) {
+        console.log(`[SAVE:${bookmaker_id}] ⚠️ Ronda ${roundData.roundId} ya está siendo guardada, omitiendo duplicado simultáneo`);
+      }
+      return;
+    }
+    
+    // Marcar como "en progreso" ANTES de insertar (evita race conditions)
+    this.savingInProgress.set(roundKey, true);
+    
     // Validar crashX
     const validCrashX = parseFloat(crashX) || parseFloat(roundData.maxMultiplier) || 0;
     if (validCrashX <= 0) {
       console.error(`[SAVE:${bookmaker_id}] ❌ crashX inválido: ${crashX}, no se guardará`);
+      // Limpiar estado de guardado en progreso
+      this.savingInProgress.delete(roundKey);
       return;
     }
     
@@ -732,9 +749,15 @@ class WebSocketService {
       } catch (dbError) {
         // Si es error de duplicado (código 23505 en PostgreSQL), no es crítico
         if (dbError.code === '23505') {
-          console.warn(`[SAVE:${bookmaker_id}] ⚠️ Ronda ${roundData.roundId} ya existe en BD (duplicado ignorado)`);
+          console.warn(`[SAVE:${bookmaker_id}] ⚠️ Ronda ${roundData.roundId} ya existe en BD (duplicado ignorado por restricción UNIQUE)`);
+          // Limpiar estado de guardado en progreso
+          this.savingInProgress.delete(roundKey);
+          // Marcar como guardada aunque falle el insert (ya existe)
+          this.savedRounds.add(roundKey);
           return; // No es un error crítico
         }
+        // Limpiar estado de guardado en progreso antes de re-lanzar error
+        this.savingInProgress.delete(roundKey);
         throw dbError; // Re-lanzar otros errores
       }
 
@@ -781,6 +804,8 @@ class WebSocketService {
       
       // MARCAR COMO GUARDADA para evitar duplicados
       this.savedRounds.add(roundKey);
+      // Limpiar estado de guardado en progreso
+      this.savingInProgress.delete(roundKey);
       
     } catch (error) {
       console.error(`[SAVE:${bookmaker_id}] ❌ ERROR CRÍTICO guardando ronda:`, {
@@ -789,6 +814,9 @@ class WebSocketService {
         code: error.code,
         stack: error.stack
       });
+      
+      // Limpiar estado de guardado en progreso en caso de error
+      this.savingInProgress.delete(roundKey);
       
       // Intentar guardar en backup
       this.saveRoundToBackup(bookmaker_id, roundData, crashX);
