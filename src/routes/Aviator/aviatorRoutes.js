@@ -228,7 +228,7 @@ function formatDuration(ms) {
   router.get('/health', async (req, res) => {
     try {
       const healthData = webSocketService.getAllBookmakersHealth();
-      const bookmakers = await db.query('SELECT id, nombre, active, decoder_type FROM bookmakers WHERE active = true');
+      const bookmakers = await db.query('SELECT id, name, active, decoder_type FROM bookmakers WHERE active = true');
       
       const healthWithDetails = healthData.map(health => {
         const bookmaker = bookmakers.rows.find(b => b.id === health.bookmakerId);
@@ -349,34 +349,6 @@ function formatDuration(ms) {
        res.status(500).json({ error: 'Internal server error' });
      }
    });
-
-
-
-// Obtener último resultado de un bookmaker específico (compatible con la ruta existente)
-router.get('/rounds/:bookmakerId', async (req, res) => {
-  const { bookmakerId } = req.params;
-  const limit = parseInt(req.query.limit) || 1;
-  
-  try {
-    const result = await db.query(
-      'SELECT id, bookmaker_id, round_id, bets_count, total_bet_amount, online_players, max_multiplier, total_cashout, casino_profit, loss_percentage, timestamp, created_at FROM game_rounds WHERE bookmaker_id = $1 ORDER BY timestamp DESC LIMIT $2',
-      [bookmakerId, limit]
-    );
-    
-    res.json({
-      success: true,
-      data: result.rows,
-      bookmakerId: parseInt(bookmakerId),
-      limit: limit
-    });
-  } catch (error) {
-    console.error('Error fetching rounds for bookmaker:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error interno del servidor' 
-    });
-  }
-});
 
 
 // Obtener hora actual del servidor
