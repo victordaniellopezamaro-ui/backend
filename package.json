@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "migrate": "npx sequelize-cli db:migrate",
-    "migrate:railway": "DATABASE_URL=tu_url_de_railway npx sequelize-cli db:migrate"
+    "migrate:railway": "DATABASE_URL=postgresql://postgres:kGCxRkcpwnEkAXumSupCBICcdGGgsKpu@yamanote.proxy.rlwy.net:41002/railway npx sequelize-cli db:migrate"
     "dev": "nodemon server.js",
     "build": "echo 'No build step required'",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -37,4 +37,5 @@
     "nodemon": "^3.1.0"
   }
 }
+
 
