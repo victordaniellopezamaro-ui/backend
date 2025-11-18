@@ -14,7 +14,7 @@ const { Pool } = require('pg');
 
 // URL completa de la base de datos (configurar aquí directamente o en variable de entorno)
 const DATABASE_URL = process.env.DATABASE_URL || 
-  'postgresql://postgres:kGCxRkcpwnEkAXumSupCBICcdGGgsKpu@yamanote.proxy.rlwy.net:41002/railway';
+  'postgresql://postgres:UXQZZtyNfGxDABMGkWvstqMDyNhfYgWI@turntable.proxy.rlwy.net:17621/railway';
 
 // Configuración del pool
 let dbConfig;
@@ -96,4 +96,5 @@ module.exports = {
       }
     }
   },
+
 };
