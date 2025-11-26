@@ -1,0 +1,3477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyLuckyStats - Dashboard de Bookmakers</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --border-radius: 0.5rem;
+            --border-radius-lg: 0.75rem;
+            --border-radius-xl: 1rem;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--gray-800);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* ===== NAVBAR COMPONENTS ===== */
+        .navbar {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4rem;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .navbar-brand i {
+            font-size: 1.75rem;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            background: transparent;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .nav-item:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .nav-item.active {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .nav-item i {
+            font-size: 1rem;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* ===== LAYOUT COMPONENTS ===== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* ===== CARD COMPONENTS ===== */
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* ===== BUTTON COMPONENTS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: var(--white);
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-1px);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        /* ===== FORM COMPONENTS ===== */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray-400);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: var(--primary-color);
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        /* ===== TABLE COMPONENTS ===== */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        th {
+            background: var(--gray-50);
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-recommended {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* ===== MODAL COMPONENTS ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--white);
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius-xl);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .close {
+            color: var(--gray-400);
+            font-size: 1.5rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0.25rem;
+        }
+
+        .close:hover {
+            color: var(--gray-600);
+        }
+
+        /* ===== LOADING & ALERTS ===== */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            display: none;
+            border: 1px solid;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-lg);
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* ===== API DOCUMENTATION ===== */
+        .api-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--gray-50);
+            border-radius: var(--border-radius-lg);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .api-section h3 {
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .api-endpoint {
+            background: var(--white);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .api-endpoint:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 1rem;
+            min-width: 3.5rem;
+            text-align: center;
+        }
+
+        .method.get {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .method.post {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .method.put {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .method.delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .api-endpoint code {
+            background: var(--gray-100);
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--border-radius);
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .api-endpoint p {
+            margin: 0.75rem 0 0 0;
+            color: var(--gray-600);
+            font-style: italic;
+            font-size: 0.875rem;
+        }
+
+        .api-example {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: #f0f9ff;
+            border-radius: var(--border-radius);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .api-example a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 0.875rem;
+            word-break: break-all;
+        }
+
+        .api-example a:hover {
+            text-decoration: underline;
+        }
+
+        .api-example strong {
+            color: var(--gray-900);
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row, .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+
+            .api-endpoint {
+                padding: 12px 15px;
+            }
+
+            .method {
+                display: block;
+                margin-bottom: 8px;
+                margin-right: 0;
+            }
+
+            .api-example a {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* ===== AVIATOR DASHBOARD ===== */
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .status-indicator.connected {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-indicator.disconnected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .aviator-dashboard {
+            padding: 1.5rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .metric-content {
+            flex: 1;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        .multiplier-section {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: var(--border-radius-xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .multiplier-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .current-multiplier {
+            position: relative;
+            z-index: 2;
+        }
+
+        .multiplier-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .multiplier-value {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        .game-state {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 9999px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 9999px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .prediction-section {
+            margin-bottom: 2rem;
+        }
+
+        .prediction-card {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--white);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .prediction-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .prediction-value {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .prediction-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .recent-rounds {
+            background: var(--gray-50);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+        }
+
+        .rounds-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .rounds-header h3 {
+            margin: 0;
+            color: var(--gray-900);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .rounds-count {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .rounds-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .round-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .round-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .round-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .round-id {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 0.875rem;
+        }
+
+        .round-time {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .round-multiplier {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--success-color);
+        }
+
+        .no-rounds {
+            text-align: center;
+            color: var(--gray-500);
+            padding: 2rem 1rem;
+            font-style: italic;
+        }
+
+        /* ===== BOOKMAKER SELECTOR ===== */
+        .bookmaker-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .bookmaker-selector select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            background: var(--white);
+            transition: var(--transition);
+        }
+
+        .bookmaker-selector select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* ===== LOGO SELECTOR ===== */
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-option {
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            background: var(--white);
+        }
+
+        .logo-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-option.selected {
+            border-color: var(--primary-color);
+            background: #f0f9ff;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-option img {
+            width: 3rem;
+            height: 3rem;
+            object-fit: contain;
+            border-radius: var(--border-radius);
+        }
+
+        .logo-option .logo-name {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .logo-option .logo-actions {
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 0.25rem;
+            justify-content: center;
+        }
+
+        .logo-delete-btn {
+            background: var(--danger-color);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .logo-delete-btn:hover {
+            background: #dc2626;
+        }
+
+        .logo-option:hover .logo-delete-btn {
+            opacity: 1;
+        }
+
+        .image-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--border-radius);
+            text-align: center;
+            background: var(--gray-50);
+        }
+
+        .image-preview img {
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .custom-image-section {
+            border-top: 1px solid var(--gray-200);
+            padding-top: 1.5rem;
+        }
+
+        /* ===== PREDICTOR COMPONENTS ===== */
+        .predictor-overview {
+            padding: 1.5rem;
+        }
+
+        .predictor-status {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .status-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .status-card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .status-card h3 i {
+            color: var(--primary-color);
+        }
+
+        .status-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .status-value.healthy {
+            color: var(--success-color);
+        }
+
+        .status-value.unhealthy {
+            color: var(--danger-color);
+        }
+
+        .signals-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .signal-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .signal-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .signal-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+        }
+
+        .signal-icon.entrada {
+            background: var(--success-color);
+            color: var(--white);
+        }
+
+        .signal-icon.gale {
+            background: var(--warning-color);
+            color: var(--white);
+        }
+
+        .signal-icon.esperando {
+            background: var(--gray-400);
+            color: var(--white);
+        }
+
+        .signal-content {
+            flex: 1;
+        }
+
+        .signal-message {
+            font-weight: 500;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .signal-time {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .predictor-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .predictor-actions .btn {
+            min-width: 150px;
+        }
+
+        /* ===== SETTINGS COMPONENTS ===== */
+        .settings-content {
+            padding: 1.5rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .setting-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .setting-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .setting-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .setting-header i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .setting-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .setting-content p {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .setting-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .setting-actions .btn {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .navbar-container {
+                padding: 0 1rem;
+                flex-wrap: wrap;
+                height: auto;
+                min-height: 4rem;
+            }
+
+            .navbar-menu {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                margin-top: 1rem;
+                gap: 0.25rem;
+            }
+
+            .nav-item {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .navbar-actions {
+                order: 2;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .form-row, .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .metric-card {
+                padding: 1rem;
+            }
+
+            .metric-value {
+                font-size: 1.25rem;
+            }
+
+            .multiplier-value {
+                font-size: 2.5rem;
+            }
+
+            .prediction-value {
+                font-size: 1.75rem;
+            }
+
+            .bookmaker-selector {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .bookmaker-selector select {
+                width: 100%;
+            }
+
+            .logo-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .logo-option img {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+
+            .api-endpoint {
+                padding: 1rem;
+            }
+
+            .method {
+                display: block;
+                margin-bottom: 0.5rem;
+                margin-right: 0;
+            }
+
+            .api-example a {
+                font-size: 0.75rem;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .setting-actions {
+                flex-direction: column;
+            }
+
+            .setting-actions .btn {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Professional Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <i class="fas fa-chart-line"></i>
+                <span>MyLuckyStats</span>
+            </div>
+            <div class="navbar-menu">
+                <button class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" onclick="showSection('bookmakers')" id="nav-bookmakers">
+                    <i class="fas fa-list"></i>
+                    <span>Bookmakers</span>
+                </button>
+                <button class="nav-item" onclick="showSection('api')" id="nav-api">
+                    <i class="fas fa-code"></i>
+                    <span>API Docs</span>
+                </button>
+                <button class="nav-item" onclick="showSection('settings')" id="nav-settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </button>
+            </div>
+            <div class="navbar-actions">
+                <div class="connection-status">
+                    <span id="globalConnectionStatus" class="status-indicator disconnected">Desconectado</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Alert Messages -->
+        <div class="alert alert-success" id="successAlert">
+            <i class="fas fa-check-circle"></i> 
+            <span id="successMessage"></span>
+        </div>
+
+        <div class="alert alert-error" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i> 
+            <span id="errorMessage"></span>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="content-section active">
+            <!-- Statistics Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBookmakers">0</div>
+                    <div class="stat-label">Total Bookmakers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeBookmakers">0</div>
+                    <div class="stat-label">Activos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="recommendedBookmakers">0</div>
+                    <div class="stat-label">Recomendados</div>
+                </div>
+            </div>
+
+            <!-- Aviator Real-time Dashboard -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-rocket"></i>
+                        Dashboard Aviator - Tiempo Real
+                    </h2>
+                    <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                        <div class="bookmaker-selector">
+                            <label for="bookmakerSelect" style="font-weight: 600; color: var(--gray-700); margin-right: 0.75rem;">
+                                <i class="fas fa-list"></i> Bookmaker:
+                            </label>
+                            <select id="bookmakerSelect" class="form-control" style="width: 200px; display: inline-block;" onchange="changeBookmaker()">
+                                <option value="">Seleccionar bookmaker...</option>
+                            </select>
+                        </div>
+                        <div class="connection-status">
+                            <span id="connectionStatus" class="status-indicator disconnected">Desconectado</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="aviator-dashboard">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="metric-content">
+                                <div class="metric-value" id="onlinePlayers">0</div>
+                                <div class="metric-label">Jugadores</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="metric-content">
+                                <div class="metric-value" id="betsCount">0</div>
+                                <div class="metric-label">Apuestas</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="metric-content">
+                                <div class="metric-value" id="totalBetAmount">$0</div>
+                                <div class="metric-label">Apostado</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div class="metric-content">
+                                <div class="metric-value" id="totalCashout">$0</div>
+                                <div class="metric-label">Retirado</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="multiplier-section">
+                        <div class="current-multiplier">
+                            <div class="multiplier-label">Multiplicador Actual</div>
+                            <div class="multiplier-value" id="currentMultiplier">0.00x</div>
+                            <div class="game-state" id="gameState">Esperando...</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="prediction-section">
+                        <div class="prediction-card">
+                            <div class="prediction-header">
+                                <i class="fas fa-brain"></i>
+                                Predicción IA
+                            </div>
+                            <div class="prediction-content">
+                                <div class="prediction-value" id="predictionValue">--</div>
+                                <div class="prediction-label">Próxima Ronda</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-rounds">
+                        <div class="rounds-header">
+                            <h3>Rondas Recientes</h3>
+                            <div class="rounds-count" id="roundsCount">0 rondas</div>
+                        </div>
+                         <div class="rounds-list" id="roundsList">
+                             <div class="no-rounds">Selecciona un bookmaker para ver las rondas...</div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookmakers Section -->
+        <div id="bookmakers-section" class="content-section">
+            <!-- Bookmakers Management -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-list"></i>
+                        Gestión de Bookmakers
+                    </h2>
+                    <button class="btn btn-primary" onclick="openModal()">
+                        <i class="fas fa-plus"></i>
+                        Nuevo Bookmaker
+                    </button>
+                </div>
+                
+                <div class="loading" id="loadingTable">
+                    <div class="spinner"></div>
+                    <p>Cargando bookmakers...</p>
+                </div>
+
+                <div class="table-container">
+                    <table id="bookmakersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Logo</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Recomendado</th>
+                                <th>WebSocket</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookmakersTableBody">
+                            <!-- Los datos se cargarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Documentation Section -->
+        <div id="api-section" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-code"></i>
+                        Documentación de API
+                    </h2>
+                    <button class="btn btn-primary" onclick="toggleApiDocs()">
+                        <i class="fas fa-eye"></i>
+                        <span id="toggleApiText">Mostrar Rutas</span>
+                    </button>
+                </div>
+            
+            <div id="apiDocumentation" style="display: none;">
+                <div class="api-section">
+                    <h3><i class="fas fa-list"></i> Bookmakers</h3>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/aviator/bookmakers</code>
+                        <p>Obtener todos los bookmakers</p>
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/aviator/bookmakers/:id</code>
+                        <p>Obtener un bookmaker específico</p>
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method post">POST</span>
+                        <code>/api/aviator/bookmakers</code>
+                        <p>Crear un nuevo bookmaker</p>
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method put">PUT</span>
+                        <code>/api/aviator/bookmakers/:id</code>
+                        <p>Actualizar un bookmaker</p>
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method delete">DELETE</span>
+                        <code>/api/aviator/bookmakers/:id</code>
+                        <p>Eliminar un bookmaker</p>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3><i class="fas fa-gamepad"></i> Rondas de Juego</h3>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/aviator/rounds/:bookmakerId</code>
+                        <p>Obtener rondas de un bookmaker específico</p>
+                        <div class="api-example">
+                            <strong>Ejemplo:</strong> 
+                            <a href="/api/aviator/rounds/1?limit=1" target="_blank">
+                                <span id="exampleRoundsUrl">/api/aviator/rounds/1?limit=1</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method post">POST</span>
+                        <code>/api/aviator/rounds</code>
+                        <p>Crear una nueva ronda</p>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3><i class="fas fa-link"></i> Estado de Conexiones</h3>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/aviator/status</code>
+                        <p>Estado de las conexiones WebSocket</p>
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>WebSocket URL</code>
+                        <p>URL para conexiones WebSocket en tiempo real</p>
+                        <div class="api-example">
+                            <strong>WebSocket:</strong> 
+                            <span id="websocketUrl" style="font-family: monospace; color: #667eea; font-weight: 600;">
+                                <!-- URL se carga dinámicamente -->
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3><i class="fas fa-history"></i> Historial</h3>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/aviator/history</code>
+                        <p>Historial general de cambios</p>
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/aviator/bookmakers/:id/history</code>
+                        <p>Historial de un bookmaker específico</p>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3><i class="fas fa-heartbeat"></i> Health Check</h3>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/health</code>
+                        <p>Estado del servidor</p>
+                        <div class="api-example">
+                            <strong>Ejemplo:</strong> 
+                            <a href="/api/health" target="_blank">
+                                <span id="exampleHealthUrl">/api/health</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/cors-info</code>
+                        <p>Información de configuración CORS</p>
+                        <div class="api-example">
+                            <strong>Ejemplo:</strong> 
+                            <a href="/api/cors-info" target="_blank">
+                                <span id="exampleCorsUrl">/api/cors-info</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3><i class="fas fa-clock"></i> Tiempo del Servidor</h3>
+                    <div class="api-endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/aviator/server-time</code>
+                        <p>Hora actual del servidor</p>
+                        <div class="api-example">
+                            <strong>Ejemplo:</strong> 
+                            <a href="/api/aviator/server-time" target="_blank">
+                                <span id="exampleServerTimeUrl">/api/aviator/server-time</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3><i class="fas fa-link"></i> URLs Dinámicas</h3>
+                    <p style="margin-bottom: 20px; color: #666;">Ejemplos de URLs específicas basadas en los bookmakers actuales:</p>
+                    <div id="dynamicUrls">
+                        <!-- Las URLs dinámicas se cargarán aquí -->
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3><i class="fas fa-plug"></i> Conexión WebSocket</h3>
+                    <p style="margin-bottom: 20px; color: #666;">Ejemplo de código para conectarse al WebSocket:</p>
+                    <div class="api-example" style="background: #f8f9fa; padding: 20px; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+                        <strong>JavaScript:</strong><br>
+                        <code style="color: #333;">
+// Conectar al WebSocket<br>
+const socket = io('<span id="socketUrl"><!-- URL del servidor actual --></span>');<br><br>
+// Unirse a un bookmaker específico<br>
+socket.emit('joinBookmaker', 1);<br><br>
+// Escuchar datos de rondas en tiempo real<br>
+socket.on('round', (data) => {<br>
+&nbsp;&nbsp;console.log('Datos de ronda:', data);<br>
+});<br><br>
+// Escuchar inicio de nueva ronda<br>
+socket.on('roundStart', (data) => {<br>
+&nbsp;&nbsp;console.log('Nueva ronda iniciada:', data);<br>
+});<br><br>
+// Escuchar multiplicador actual<br>
+socket.on('multiplier', (data) => {<br>
+&nbsp;&nbsp;console.log('Multiplicador:', data);<br>
+});
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings-section" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-cog"></i>
+                        Configuración del Sistema
+                    </h2>
+                </div>
+                <div class="settings-content">
+                    <div class="settings-grid">
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <i class="fas fa-bug"></i>
+                                <h3>Modo Debug</h3>
+                            </div>
+                            <div class="setting-content">
+                                <p>Activa logs detallados para depuración de rondas y decoders</p>
+                                <div style="margin: 15px 0;">
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                        <input type="checkbox" id="debugModeToggle" onchange="toggleDebugMode()" style="width: 20px; height: 20px;">
+                                        <span style="font-weight: 600;">Activar Modo Debug</span>
+                                    </label>
+                                </div>
+                                <div class="setting-actions">
+                                    <button class="btn btn-primary" onclick="openDebugConsole()">
+                                        <i class="fas fa-terminal"></i>
+                                        Ver Console Logs
+                                    </button>
+                                    <button class="btn btn-warning" onclick="testRoundSave()">
+                                        <i class="fas fa-flask"></i>
+                                        Test Guardado
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <i class="fas fa-database"></i>
+                                <h3>Base de Datos</h3>
+                            </div>
+                            <div class="setting-content">
+                                <p>Gestiona las tablas y datos del sistema</p>
+                                <div class="setting-actions">
+                                    <button class="btn btn-primary" onclick="showDatabaseInfo()">
+                                        <i class="fas fa-info-circle"></i>
+                                        Ver Información
+                                    </button>
+                                    <button class="btn btn-warning" onclick="showTableManager()">
+                                        <i class="fas fa-table"></i>
+                                        Gestionar Tablas
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <i class="fas fa-server"></i>
+                                <h3>Servidor</h3>
+                            </div>
+                            <div class="setting-content">
+                                <p>Configuración del servidor y conexiones</p>
+                                <div class="setting-actions">
+                                    <button class="btn btn-primary" onclick="checkServerStatus()">
+                                        <i class="fas fa-heartbeat"></i>
+                                        Estado del Servidor
+                                    </button>
+                                    <button class="btn btn-success" onclick="testConnections()">
+                                        <i class="fas fa-plug"></i>
+                                        Probar Conexiones
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <i class="fas fa-chart-bar"></i>
+                                <h3>Estadísticas</h3>
+                            </div>
+                            <div class="setting-content">
+                                <p>Análisis y reportes del sistema</p>
+                                <div class="setting-actions">
+                                    <button class="btn btn-primary" onclick="generateReport()">
+                                        <i class="fas fa-file-alt"></i>
+                                        Generar Reporte
+                                    </button>
+                                    <button class="btn btn-info" onclick="viewAnalytics()">
+                                        <i class="fas fa-chart-line"></i>
+                                        Ver Analytics
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-card" style="grid-column: span 2;">
+                            <div class="setting-header">
+                                <i class="fas fa-heartbeat"></i>
+                                <h3>Monitoreo de Bookmakers</h3>
+                            </div>
+                            <div class="setting-content">
+                                <p>Estado de salud en tiempo real de todos los bookmakers activos</p>
+                                <div id="healthMonitor" style="margin: 20px 0;">
+                                    <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                                        <div style="background: #dcfce7; padding: 10px 20px; border-radius: 8px; flex: 1; min-width: 120px;">
+                                            <div style="font-size: 0.75rem; color: #166534; font-weight: 600;">SALUDABLES</div>
+                                            <div style="font-size: 1.5rem; font-weight: 700; color: #166534;" id="healthyCount">0</div>
+                                        </div>
+                                        <div style="background: #fef3c7; padding: 10px 20px; border-radius: 8px; flex: 1; min-width: 120px;">
+                                            <div style="font-size: 0.75rem; color: #92400e; font-weight: 600;">ADVERTENCIA</div>
+                                            <div style="font-size: 1.5rem; font-weight: 700; color: #92400e;" id="warningCount">0</div>
+                                        </div>
+                                        <div style="background: #fee2e2; padding: 10px 20px; border-radius: 8px; flex: 1; min-width: 120px;">
+                                            <div style="font-size: 0.75rem; color: #991b1b; font-weight: 600;">CAÍDOS</div>
+                                            <div style="font-size: 1.5rem; font-weight: 700; color: #991b1b;" id="downCount">0</div>
+                                        </div>
+                                    </div>
+                                    <div id="bookmakersHealthList" style="max-height: 400px; overflow-y: auto;">
+                                        <p style="text-align: center; color: #666; padding: 20px;">Cargando estado de salud...</p>
+                                    </div>
+                                </div>
+                                <div class="setting-actions">
+                                    <button class="btn btn-primary" onclick="refreshHealth()">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Actualizar Estado
+                                    </button>
+                                    <button class="btn btn-warning" onclick="reconnectAllDown()">
+                                        <i class="fas fa-redo"></i>
+                                        Reconectar Caídos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookmaker Modal -->
+    <div id="bookmakerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nuevo Bookmaker</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            
+            <form id="bookmakerForm">
+                <input type="hidden" id="bookmakerId" name="id">
+                
+                <div class="form-group">
+                    <label for="name">Nombre del Bookmaker *</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea id="description" name="description" class="form-control" rows="3"></textarea>
+                </div>
+
+                 <div class="form-group">
+                     <label for="bookmaker_image">Imagen del Bookmaker</label>
+                     
+                     <!-- Selector de logos pre-cargados -->
+                     <div class="logo-selector">
+                         <h4 style="margin-bottom: 15px; color: #333;">Logos Disponibles:</h4>
+                         <div class="logo-grid" id="logoGrid">
+                             <!-- Los logos se cargarán dinámicamente -->
+                         </div>
+                     </div>
+                     
+                     <!-- Opción de imagen personalizada -->
+                     <div class="custom-image-section" style="margin-top: 20px;">
+                         <h4 style="margin-bottom: 15px; color: #333;">O subir imagen personalizada:</h4>
+                         <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">
+                             La imagen se guardará como logo usando el nombre del archivo.<br>
+                             Ejemplo: <code>betano.webp</code> → <code>/api/logos/image/betano</code><br>
+                             <strong>Si ya existe un logo con ese nombre, se preguntará si quieres reemplazarlo.</strong>
+                         </p>
+                         <input type="file" id="custom_image" name="custom_image" class="form-control" 
+                                accept="image/*" onchange="previewCustomImage(this)">
+                         <div id="customImagePreview" class="image-preview" style="display: none;">
+                             <img id="previewImg" src="" alt="Preview" style="max-width: 100px; max-height: 100px; margin-top: 10px;">
+                         </div>
+                     </div>
+                     
+                     <!-- Restaurar logos por defecto -->
+                     <div class="restore-defaults-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                         <h4 style="margin-bottom: 15px; color: #333;">Gestión de Logos:</h4>
+                         <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">
+                             Si has eliminado logos por defecto, puedes restaurarlos aquí.
+                         </p>
+                         <button type="button" class="btn btn-warning" onclick="restoreDefaultLogos()" style="font-size: 0.9rem; padding: 8px 16px;">
+                             <i class="fas fa-undo"></i>
+                             Restaurar Logos por Defecto
+                         </button>
+                     </div>
+                     
+                     <!-- Campo oculto para la imagen seleccionada -->
+                     <input type="hidden" id="selected_image" name="url_image">
+                 </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="recomendado" name="recomendado">
+                            <label for="recomendado">Recomendado</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="active" name="active" checked>
+                            <label for="active">Activo</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="url_websocket">URL WebSocket *</label>
+                    <input type="url" id="url_websocket" name="url_websocket" class="form-control" required 
+                           placeholder="wss://ejemplo.com/websocket">
+                </div>
+
+                <div class="form-group">
+                    <label for="first_message">Primer Mensaje (Base64) *</label>
+                    <textarea id="first_message" name="first_message" class="form-control" rows="2" required
+                              placeholder="Mensaje codificado en Base64"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="second_message">Segundo Mensaje (Base64) *</label>
+                    <textarea id="second_message" name="second_message" class="form-control" rows="2" required
+                              placeholder="Mensaje codificado en Base64"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="third_message">Tercer Mensaje (Base64) *</label>
+                    <textarea id="third_message" name="third_message" class="form-control" rows="2" required
+                              placeholder="Mensaje codificado en Base64"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="decoder_type">
+                        <i class="fas fa-code"></i> Tipo de Decoder *
+                    </label>
+                    <select id="decoder_type" name="decoder_type" class="form-control" required>
+                        <option value="auto">Auto-detectar (Recomendado)</option>
+                        <option value="msgpack">MessagePack</option>
+                        <option value="sfs">SFS (SmartFoxServer)</option>
+                    </select>
+                    <small style="display: block; margin-top: 8px; color: #666; font-size: 0.85rem;">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Auto-detectar:</strong> El sistema detectará automáticamente el protocolo.<br>
+                        <strong>MessagePack:</strong> Para bookmakers que usan protocolo MessagePack.<br>
+                        <strong>SFS:</strong> Para bookmakers que usan SmartFoxServer protocol.
+                    </small>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px;">
+                    <button type="button" class="btn" onclick="closeModal()" style="background: #6c757d; color: white;">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        <span id="submitButtonText">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script>
+        // Variables globales para Aviator Dashboard
+        let aviatorSocket = null;
+        let aviatorData = {
+            online_players: 0,
+            bets_count: 0,
+            total_bet_amount: 0,
+            total_cashout: 0,
+            current_multiplier: 0,
+            max_multiplier: 0,
+            game_state: 'Bet'
+        };
+        let recentRounds = [];
+        let prediction = null;
+        let progressInterval = null;
+         let bookmakerId = null; // No hay bookmaker por defecto
+        let availableBookmakers = []; // Lista de bookmakers disponibles
+
+        // Función para formatear moneda
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(value);
+        }
+
+        // Función para formatear fecha
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleTimeString('es-CO', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        // Conectar al WebSocket
+        function connectAviatorSocket() {
+            const baseUrl = getBaseUrl();
+            const wsUrl = baseUrl.replace('http://', 'ws://').replace('https://', 'wss://');
+            
+            console.log('Conectando a WebSocket:', wsUrl);
+            
+            aviatorSocket = io(wsUrl);
+
+            aviatorSocket.on('connect', () => {
+                console.log('WebSocket conectado');
+                updateConnectionStatus(true);
+                if (bookmakerId) {
+                    aviatorSocket.emit('joinBookmaker', bookmakerId);
+                }
+            });
+
+            aviatorSocket.on('disconnect', () => {
+                console.log('WebSocket desconectado');
+                updateConnectionStatus(false);
+            });
+
+            aviatorSocket.on('connect_error', (error) => {
+                console.error('Error de conexión WebSocket:', error);
+                updateConnectionStatus(false);
+            });
+
+            // Escuchar datos de rondas en tiempo real
+            aviatorSocket.on('round', (data) => {
+                if (window.DEBUG_ROUNDS || debugMode) {
+                    console.log('[WebSocket] 📥 Datos de ronda recibidos:', data);
+                }
+                updateAviatorData(data);
+            });
+
+            // Escuchar predicciones
+            aviatorSocket.on('prediction', (data) => {
+                if (window.DEBUG_ROUNDS || debugMode) {
+                    console.log('[WebSocket] 🔮 Predicción recibida:', data);
+                }
+                updatePrediction(data);
+            });
+
+            // Escuchar nuevas rondas guardadas
+            aviatorSocket.on('newRound', (data) => {
+                if (window.DEBUG_ROUNDS || debugMode) {
+                    console.log('[WebSocket] 💾 Nueva ronda guardada:', data);
+                }
+                addRoundToList(data);
+            });
+        }
+
+         // Cambiar bookmaker
+         function changeBookmaker() {
+             const selectElement = document.getElementById('bookmakerSelect');
+             const newBookmakerId = parseInt(selectElement.value);
+             
+             if (newBookmakerId) {
+                 console.log(`Cambiando a bookmaker ${newBookmakerId}`);
+                 
+                 // Detener datos del bookmaker anterior
+                 stopCurrentBookmaker();
+                 
+                 // Asignar nuevo bookmaker
+                 bookmakerId = newBookmakerId;
+                 
+                 // Si ya hay una conexión WebSocket, unirse al room del nuevo bookmaker
+                 if (aviatorSocket && aviatorSocket.connected) {
+                     aviatorSocket.emit('joinBookmaker', bookmakerId);
+                 }
+                 
+                 // Cargar rondas históricas del nuevo bookmaker
+                 loadHistoricalRounds();
+                 
+                 // Limpiar datos actuales para mostrar datos del nuevo
+                 resetAviatorData();
+                 
+                 console.log(`Ahora mostrando datos del bookmaker ${bookmakerId}`);
+             } else {
+                 // Si selecciona "Seleccionar bookmaker..." (opción vacía)
+                 console.log('Deteniendo visualización - no hay bookmaker seleccionado');
+                 
+                 // Detener todo
+                 stopCurrentBookmaker();
+                 
+                 // Limpiar selección
+                 bookmakerId = null;
+                 
+                 // Limpiar todos los datos
+                 resetAviatorData();
+                 
+                 // Mostrar mensaje de selección
+                 showNoBookmakerSelected();
+             }
+         }
+
+        // Detener bookmaker actual
+        function stopCurrentBookmaker() {
+            console.log('Deteniendo bookmaker actual...');
+            
+            // Detener animaciones
+            stopProgressAnimation();
+            
+            // Limpiar datos en tiempo real
+            aviatorData = {
+                online_players: 0,
+                bets_count: 0,
+                total_bet_amount: 0,
+                total_cashout: 0,
+                current_multiplier: 0,
+                max_multiplier: 0,
+                game_state: 'Bet'
+            };
+            
+            // Limpiar rondas y predicciones
+            recentRounds = [];
+            prediction = null;
+        }
+
+        // Mostrar mensaje cuando no hay bookmaker seleccionado
+        function showNoBookmakerSelected() {
+            // Actualizar UI con valores en cero
+            updateMetrics();
+            updateMultiplier();
+            updateGameState();
+            
+            // Mostrar mensaje en rondas
+            const roundsListElement = document.getElementById('roundsList');
+            if (roundsListElement) {
+                roundsListElement.innerHTML = '<div class="no-rounds">Selecciona un bookmaker para ver las rondas...</div>';
+            }
+            
+            // Actualizar contador de rondas
+            const roundsCountElement = document.getElementById('roundsCount');
+            if (roundsCountElement) {
+                roundsCountElement.textContent = '0 rondas';
+            }
+            
+            // Limpiar predicción
+            const predictionElement = document.getElementById('predictionValue');
+            if (predictionElement) {
+                predictionElement.textContent = '--';
+            }
+        }
+
+        // Resetear datos de Aviator
+        function resetAviatorData() {
+            aviatorData = {
+                online_players: 0,
+                bets_count: 0,
+                total_bet_amount: 0,
+                total_cashout: 0,
+                current_multiplier: 0,
+                max_multiplier: 0,
+                game_state: 'Bet'
+            };
+            recentRounds = [];
+            prediction = null;
+            
+            // Actualizar UI
+            updateMetrics();
+            updateMultiplier();
+            updateGameState();
+            updateRoundsList();
+        }
+
+        // Actualizar estado de conexión
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (statusElement) {
+                statusElement.textContent = connected ? 'Conectado' : 'Desconectado';
+                statusElement.className = `status-indicator ${connected ? 'connected' : 'disconnected'}`;
+            }
+        }
+
+         // Actualizar datos de Aviator
+         function updateAviatorData(data) {
+             // Solo procesar datos si hay un bookmaker seleccionado
+             if (!bookmakerId) {
+                 console.log('Ignorando datos - no hay bookmaker seleccionado');
+                 return;
+             }
+             
+             // Verificar que los datos correspondan al bookmaker seleccionado
+             if (data.bookmaker_id && data.bookmaker_id !== bookmakerId) {
+                 console.log(`Ignorando datos del bookmaker ${data.bookmaker_id} - seleccionado: ${bookmakerId}`);
+                 return;
+             }
+             
+             console.log(`Procesando datos del bookmaker ${bookmakerId}:`, data);
+             
+             // Actualizar datos en tiempo real
+             aviatorData = {
+                 online_players: parseInt(data.online_players) || 0,
+                 bets_count: parseInt(data.bets_count) || 0,
+                 total_bet_amount: parseFloat(data.total_bet_amount) || 0,
+                 total_cashout: parseFloat(data.total_cashout) || 0,
+                 current_multiplier: parseFloat(data.current_multiplier) || 0,
+                 max_multiplier: parseFloat(data.max_multiplier) || 0,
+                 game_state: data.game_state || 'Bet'
+             };
+
+             // Actualizar UI
+             updateMetrics();
+             updateMultiplier();
+             updateGameState();
+
+             // Si la ronda terminó, agregar a la lista
+             if (data.game_state === 'End' && data.round_id) {
+                 addRoundToList(data);
+             }
+         }
+
+        // Actualizar métricas
+        function updateMetrics() {
+            document.getElementById('onlinePlayers').textContent = aviatorData.online_players;
+            document.getElementById('betsCount').textContent = aviatorData.bets_count;
+            document.getElementById('totalBetAmount').textContent = formatCurrency(aviatorData.total_bet_amount);
+            document.getElementById('totalCashout').textContent = formatCurrency(aviatorData.total_cashout);
+        }
+
+        // Actualizar multiplicador
+        function updateMultiplier() {
+            const multiplierElement = document.getElementById('currentMultiplier');
+            if (multiplierElement) {
+                multiplierElement.textContent = aviatorData.current_multiplier.toFixed(2) + 'x';
+            }
+        }
+
+        // Actualizar estado del juego
+        function updateGameState() {
+            const gameStateElement = document.getElementById('gameState');
+            if (gameStateElement) {
+                const stateText = {
+                    'Bet': 'APUESTAS ABIERTAS',
+                    'Run': 'AVIÓN VOLANDO',
+                    'End': 'RONDA TERMINADA'
+                };
+                gameStateElement.textContent = stateText[aviatorData.game_state] || 'ESPERANDO...';
+            }
+
+            // Actualizar barra de progreso
+            updateProgressBar();
+        }
+
+        // Actualizar barra de progreso
+        function updateProgressBar() {
+            const progressFill = document.getElementById('progressFill');
+            if (!progressFill) return;
+
+            if (aviatorData.game_state === 'Bet') {
+                // Iniciar animación de progreso
+                startProgressAnimation();
+            } else {
+                // Detener animación
+                stopProgressAnimation();
+                progressFill.style.width = '0%';
+            }
+        }
+
+        // Iniciar animación de progreso
+        function startProgressAnimation() {
+            stopProgressAnimation();
+            
+            const progressFill = document.getElementById('progressFill');
+            const duration = 6000; // 6 segundos
+            const startTime = Date.now();
+
+            progressInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.max(100 - (elapsed / duration) * 100, 0);
+                progressFill.style.width = progress + '%';
+
+                if (progress <= 0) {
+                    stopProgressAnimation();
+                }
+            }, 16); // ~60 FPS
+        }
+
+        // Detener animación de progreso
+        function stopProgressAnimation() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+         // Actualizar predicción
+         function updatePrediction(data) {
+             // Solo procesar predicción si hay un bookmaker seleccionado
+             if (!bookmakerId) {
+                 console.log('Ignorando predicción - no hay bookmaker seleccionado');
+                 return;
+             }
+             
+             // Verificar que la predicción corresponda al bookmaker seleccionado
+             if (data.bookmaker_id && data.bookmaker_id !== bookmakerId) {
+                 console.log(`Ignorando predicción del bookmaker ${data.bookmaker_id} - seleccionado: ${bookmakerId}`);
+                 return;
+             }
+             
+             console.log(`Procesando predicción del bookmaker ${bookmakerId}:`, data);
+             
+             prediction = data;
+             const predictionElement = document.getElementById('predictionValue');
+             if (predictionElement) {
+                 predictionElement.textContent = data.prediction ? data.prediction.toFixed(2) + 'x' : '--';
+             }
+         }
+
+        // Agregar ronda a la lista
+        function addRoundToList(roundData) {
+            // Solo agregar ronda si hay un bookmaker seleccionado
+            if (!bookmakerId) {
+                console.log('Ignorando ronda - no hay bookmaker seleccionado');
+                return;
+            }
+            
+            // Verificar que la ronda corresponda al bookmaker seleccionado
+            if (roundData.bookmaker_id && roundData.bookmaker_id !== bookmakerId) {
+                console.log(`Ignorando ronda del bookmaker ${roundData.bookmaker_id} - seleccionado: ${bookmakerId}`);
+                return;
+            }
+            
+            console.log(`Agregando ronda del bookmaker ${bookmakerId}:`, roundData);
+            
+            const round = {
+                id: roundData.id || roundData.round_id,
+                round_id: roundData.round_id,
+                timestamp: roundData.timestamp || new Date().toISOString(),
+                max_multiplier: parseFloat(roundData.max_multiplier) || 0,
+                bets_count: parseInt(roundData.bets_count) || 0,
+                total_bet_amount: parseFloat(roundData.total_bet_amount) || 0,
+                online_players: parseInt(roundData.online_players) || 0,
+                total_cashout: parseFloat(roundData.total_cashout) || 0,
+                casino_profit: parseFloat(roundData.casino_profit) || 0,
+                loss_percentage: parseFloat(roundData.loss_percentage) || 0,
+            };
+
+            // Agregar al inicio de la lista
+            recentRounds.unshift(round);
+            
+            // Mantener solo las últimas 20 rondas
+            if (recentRounds.length > 20) {
+                recentRounds = recentRounds.slice(0, 20);
+            }
+
+            updateRoundsList();
+        }
+
+        // Actualizar lista de rondas
+        function updateRoundsList() {
+            const roundsListElement = document.getElementById('roundsList');
+            const roundsCountElement = document.getElementById('roundsCount');
+            
+            if (!roundsListElement) return;
+
+            // Actualizar contador
+            if (roundsCountElement) {
+                roundsCountElement.textContent = `${recentRounds.length} rondas`;
+            }
+
+            if (recentRounds.length === 0) {
+                roundsListElement.innerHTML = '<div class="no-rounds">No hay rondas disponibles</div>';
+                return;
+            }
+
+            // Generar HTML de las rondas
+            const roundsHTML = recentRounds.map(round => `
+                <div class="round-item">
+                    <div class="round-info">
+                        <div class="round-id">Ronda ${round.round_id}</div>
+                        <div class="round-time">${formatDate(round.timestamp)}</div>
+                    </div>
+                    <div class="round-multiplier">${round.max_multiplier.toFixed(2)}x</div>
+                </div>
+            `).join('');
+
+            roundsListElement.innerHTML = roundsHTML;
+        }
+
+         // Cargar rondas históricas
+         async function loadHistoricalRounds() {
+             if (!bookmakerId) {
+                 console.log('No hay bookmaker seleccionado');
+                 return;
+             }
+             
+             try {
+                 const response = await fetch(`${getBaseUrl()}/api/aviator/rounds/${bookmakerId}?limit=20`);
+                 if (response.ok) {
+                     const data = await response.json();
+                     if (Array.isArray(data)) {
+                         recentRounds = data.map(round => ({
+                             id: round.id || round.round_id,
+                             round_id: round.round_id,
+                             timestamp: round.created_at || round.timestamp || new Date().toISOString(),
+                             max_multiplier: parseFloat(round.max_multiplier) || 0,
+                             bets_count: parseInt(round.bets_count) || 0,
+                             total_bet_amount: parseFloat(round.total_bet_amount) || 0,
+                             online_players: parseInt(round.online_players) || 0,
+                             total_cashout: parseFloat(round.total_cashout) || 0,
+                             casino_profit: parseFloat(round.casino_profit) || 0,
+                             loss_percentage: parseFloat(round.loss_percentage) || 0,
+                         }));
+                         updateRoundsList();
+                     }
+                 }
+             } catch (error) {
+                 console.error('Error cargando rondas históricas:', error);
+             }
+         }
+
+         // Inicializar dashboard de Aviator
+         function initializeAviatorDashboard() {
+             console.log('Inicializando dashboard de Aviator...');
+             connectAviatorSocket();
+             listenToHealthUpdates();
+             // No cargar rondas hasta que se seleccione un bookmaker
+         }
+
+        let bookmakers = [];
+        let editingId = null;
+
+         // ===== NAVIGATION FUNCTIONS =====
+         function showSection(sectionName) {
+             // Ocultar todas las secciones
+             const sections = document.querySelectorAll('.content-section');
+             sections.forEach(section => {
+                 section.classList.remove('active');
+             });
+
+             // Mostrar la sección seleccionada
+             const targetSection = document.getElementById(sectionName + '-section');
+             if (targetSection) {
+                 targetSection.classList.add('active');
+             }
+
+             // Actualizar navegación activa
+             const navItems = document.querySelectorAll('.nav-item');
+             navItems.forEach(item => {
+                 item.classList.remove('active');
+             });
+
+             const activeNav = document.getElementById('nav-' + sectionName);
+             if (activeNav) {
+                 activeNav.classList.add('active');
+             }
+
+             // Cargar datos específicos según la sección
+             switch(sectionName) {
+                 case 'dashboard':
+                     updateStats();
+                     break;
+                 case 'bookmakers':
+                     loadBookmakers();
+                     break;
+                case 'api':
+                    updateExampleUrls();
+                    break;
+                case 'settings':
+                    // Cargar estado de salud al entrar a configuración
+                    refreshHealth();
+                    break;
+             }
+         }
+
+         // ===== SETTINGS FUNCTIONS =====
+         function showDatabaseInfo() {
+             showSuccess('Información de base de datos cargada');
+             // Aquí se puede implementar la lógica para mostrar información de la BD
+         }
+
+         function showTableManager() {
+             showSuccess('Gestor de tablas abierto');
+             // Aquí se puede implementar la lógica para gestionar tablas
+         }
+
+         function checkServerStatus() {
+             showSuccess('Estado del servidor verificado');
+             // Aquí se puede implementar la lógica para verificar el estado
+         }
+
+         function testConnections() {
+             showSuccess('Conexiones probadas exitosamente');
+             // Aquí se puede implementar la lógica para probar conexiones
+         }
+
+         function generateReport() {
+             showSuccess('Reporte generado exitosamente');
+             // Aquí se puede implementar la lógica para generar reportes
+         }
+
+         function viewAnalytics() {
+             showSuccess('Analytics cargados');
+             // Aquí se puede implementar la lógica para mostrar analytics
+         }
+
+         // ===== HEALTH MONITORING FUNCTIONS =====
+         let healthData = null;
+         
+         async function refreshHealth() {
+             try {
+                 const response = await fetch(`${getBaseUrl()}/api/aviator/health`);
+                 const data = await response.json();
+                 healthData = data;
+                 updateHealthMonitor(data);
+                 showSuccess('Estado de salud actualizado');
+             } catch (error) {
+                 console.error('Error cargando health:', error);
+                 showError('Error al cargar el estado de salud');
+             }
+         }
+         
+         function updateHealthMonitor(data) {
+             // Actualizar contadores
+             document.getElementById('healthyCount').textContent = data.stats.healthy;
+             document.getElementById('warningCount').textContent = data.stats.warning;
+             document.getElementById('downCount').textContent = data.stats.down;
+             
+             // Actualizar lista de bookmakers
+             const listElement = document.getElementById('bookmakersHealthList');
+             if (!data.bookmakers || data.bookmakers.length === 0) {
+                 listElement.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No hay bookmakers activos</p>';
+                 return;
+             }
+             
+             let html = '';
+             data.bookmakers.forEach(bm => {
+                 const statusClass = getHealthStatusClass(bm.status);
+                 const statusIcon = getHealthStatusIcon(bm.status);
+                 const statusColor = getHealthStatusColor(bm.status);
+                 
+                 html += `
+                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; margin-bottom: 8px; background: white; border-radius: 8px; border-left: 4px solid ${statusColor}; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                         <div style="flex: 1;">
+                             <div style="display: flex; align-items: center; gap: 10px;">
+                                 <span style="font-size: 1.2rem;">${statusIcon}</span>
+                                 <div>
+                                     <div style="font-weight: 600; color: #333; font-size: 0.95rem;">${bm.bookmakerName}</div>
+                                     <div style="font-size: 0.75rem; color: #666;">
+                                         <span>Decoder: ${bm.decoderType || 'auto'}</span>
+                                         ${bm.timeSinceActivityFormatted ? ` • Última actividad: ${bm.timeSinceActivityFormatted}` : ''}
+                                         ${bm.consecutiveFailures > 0 ? ` • Fallos: ${bm.consecutiveFailures}` : ''}
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                         <div>
+                             <span class="${statusClass}" style="text-transform: uppercase; font-size: 0.7rem; padding: 4px 12px; border-radius: 12px; font-weight: 600;">
+                                 ${bm.status}
+                             </span>
+                         </div>
+                     </div>
+                 `;
+             });
+             
+             listElement.innerHTML = html;
+         }
+         
+         function getHealthStatusClass(status) {
+             switch(status) {
+                 case 'healthy': return 'status-active';
+                 case 'warning': return 'status-recommended';
+                 case 'down': case 'disconnected': return 'status-inactive';
+                 default: return 'status-inactive';
+             }
+         }
+         
+         function getHealthStatusIcon(status) {
+             switch(status) {
+                 case 'healthy': return '✅';
+                 case 'warning': return '⚠️';
+                 case 'down': return '❌';
+                 case 'disconnected': return '🔌';
+                 default: return '❓';
+             }
+         }
+         
+         function getHealthStatusColor(status) {
+             switch(status) {
+                 case 'healthy': return '#10b981';
+                 case 'warning': return '#f59e0b';
+                 case 'down': return '#ef4444';
+                 case 'disconnected': return '#6b7280';
+                 default: return '#9ca3af';
+             }
+         }
+         
+         async function reconnectAllDown() {
+             if (!healthData) {
+                 showError('Actualiza el estado primero');
+                 return;
+             }
+             
+             const downBookmakers = healthData.bookmakers.filter(bm => bm.status === 'down' || bm.status === 'disconnected');
+             
+             if (downBookmakers.length === 0) {
+                 showSuccess('No hay bookmakers caídos');
+                 return;
+             }
+             
+             const confirmReconnect = confirm(`¿Deseas reconectar ${downBookmakers.length} bookmaker(s) caídos?`);
+             if (!confirmReconnect) return;
+             
+             try {
+                 const response = await fetch(`${getBaseUrl()}/api/aviator/reset-connections`, {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' }
+                 });
+                 
+                 if (response.ok) {
+                     showSuccess('Reconectando todos los bookmakers...');
+                     setTimeout(refreshHealth, 3000);
+                 } else {
+                     throw new Error('Error al reconectar');
+                 }
+             } catch (error) {
+                 console.error('Error:', error);
+                 showError('Error al reconectar bookmakers');
+             }
+         }
+         
+         // Escuchar actualizaciones de salud en tiempo real
+         function listenToHealthUpdates() {
+             if (aviatorSocket) {
+                 aviatorSocket.on('bookmakersHealth', (data) => {
+                     if (window.DEBUG_ROUNDS || debugMode) {
+                         console.log('[WebSocket] 🏥 Estado de salud recibido:', data);
+                     }
+                     
+                     // Solo actualizar si estamos en la sección de configuración
+                     const settingsSection = document.getElementById('settings-section');
+                     if (settingsSection && settingsSection.classList.contains('active')) {
+                         // Convertir array a formato esperado
+                         const formattedData = {
+                             stats: {
+                                 healthy: data.filter(d => d.status === 'healthy').length,
+                                 warning: data.filter(d => d.status === 'warning').length,
+                                 down: data.filter(d => d.status === 'down').length
+                             },
+                             bookmakers: data
+                         };
+                         updateHealthMonitor(formattedData);
+                     }
+                 });
+             }
+         }
+
+         // ===== DEBUG FUNCTIONS =====
+         let debugMode = false;
+         
+         function toggleDebugMode() {
+             debugMode = document.getElementById('debugModeToggle').checked;
+             console.log(`🐛 Modo Debug: ${debugMode ? 'ACTIVADO' : 'DESACTIVADO'}`);
+             
+             if (debugMode) {
+                 showSuccess('Modo Debug activado - Revisa la consola del navegador para logs detallados');
+                 // Activar logging en el cliente
+                 window.DEBUG_ROUNDS = true;
+             } else {
+                 showSuccess('Modo Debug desactivado');
+                 window.DEBUG_ROUNDS = false;
+             }
+         }
+         
+         function openDebugConsole() {
+             console.log('═══════════════════════════════════════');
+             console.log('🐛 DEBUG CONSOLE - MyLuckyStats');
+             console.log('═══════════════════════════════════════');
+             console.log('📊 Estado actual:');
+             console.log('  - Bookmaker seleccionado:', bookmakerId || 'Ninguno');
+             console.log('  - WebSocket conectado:', aviatorSocket?.connected || false);
+             console.log('  - Rondas recientes:', recentRounds.length);
+             console.log('  - Modo debug:', debugMode ? 'ACTIVADO' : 'DESACTIVADO');
+             console.log('═══════════════════════════════════════');
+             console.log('📥 Última data de ronda:', aviatorData);
+             console.log('═══════════════════════════════════════');
+             showSuccess('Logs mostrados en la consola del navegador (F12)');
+         }
+         
+         async function testRoundSave() {
+             if (!bookmakerId) {
+                 showError('Selecciona un bookmaker primero');
+                 return;
+             }
+             
+             console.log('🧪 TEST: Simulando guardado de ronda...');
+             
+             const testRound = {
+                 bookmaker_id: bookmakerId,
+                 round_id: `test_${Date.now()}`,
+                 bets_count: 10,
+                 total_bet_amount: 1000,
+                 online_players: 50,
+                 max_multiplier: 2.54,
+                 total_cashout: 800,
+                 casino_profit: 200,
+                 loss_percentage: 20
+             };
+             
+             console.log('📤 Datos de prueba:', testRound);
+             
+             try {
+                 const response = await fetch('/api/aviator/rounds', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify(testRound)
+                 });
+                 
+                 if (response.ok) {
+                     const result = await response.json();
+                     console.log('✅ Test exitoso:', result);
+                     showSuccess('Test de guardado exitoso - Revisa la consola');
+                 } else {
+                     const error = await response.json();
+                     console.error('❌ Test falló:', error);
+                     showError('Test falló: ' + (error.error || 'Error desconocido'));
+                 }
+             } catch (error) {
+                 console.error('❌ Error en test:', error);
+                 showError('Error en test: ' + error.message);
+             }
+         }
+
+         // Cargar bookmakers al iniciar
+         document.addEventListener('DOMContentLoaded', function() {
+             updateExampleUrls();
+             loadBookmakers();
+             initializeAviatorDashboard();
+             loadAvailableLogos();
+             
+             // Mostrar sección dashboard por defecto
+             showSection('dashboard');
+         });
+
+        // Actualizar URLs de ejemplo con el dominio actual
+        function updateExampleUrls() {
+            const baseUrl = getBaseUrl();
+            const wsUrl = getWebSocketUrl();
+            
+            // Actualizar URL de ejemplo de rondas
+            const roundsUrlElement = document.getElementById('exampleRoundsUrl');
+            if (roundsUrlElement) {
+                roundsUrlElement.textContent = `${baseUrl}/api/aviator/rounds/1?limit=1`;
+            }
+            
+            // Actualizar URL de ejemplo de health check
+            const healthUrlElement = document.getElementById('exampleHealthUrl');
+            if (healthUrlElement) {
+                healthUrlElement.textContent = `${baseUrl}/api/health`;
+            }
+            
+            // Actualizar URL de ejemplo de CORS info
+            const corsUrlElement = document.getElementById('exampleCorsUrl');
+            if (corsUrlElement) {
+                corsUrlElement.textContent = `${baseUrl}/api/cors-info`;
+            }
+            
+            // Actualizar URL de ejemplo de server time
+            const serverTimeUrlElement = document.getElementById('exampleServerTimeUrl');
+            if (serverTimeUrlElement) {
+                serverTimeUrlElement.textContent = `${baseUrl}/api/aviator/server-time`;
+            }
+            
+            // Actualizar URL del WebSocket
+            const websocketUrlElement = document.getElementById('websocketUrl');
+            if (websocketUrlElement) {
+                websocketUrlElement.textContent = wsUrl;
+            }
+            
+            // Actualizar URL del socket en el ejemplo de código
+            const socketUrlElement = document.getElementById('socketUrl');
+            if (socketUrlElement) {
+                socketUrlElement.textContent = wsUrl;
+            }
+        }
+
+        // Cargar lista de bookmakers
+        async function loadBookmakers() {
+            try {
+                showLoading(true);
+                const response = await fetch('/api/aviator/bookmakers');
+                bookmakers = await response.json();
+                availableBookmakers = bookmakers.filter(b => b.active); // Solo bookmakers activos
+                renderBookmakers();
+                updateStats();
+                populateBookmakerSelector();
+            } catch (error) {
+                showError('Error al cargar los bookmakers: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Poblar selector de bookmakers
+        function populateBookmakerSelector() {
+            const selectElement = document.getElementById('bookmakerSelect');
+            if (!selectElement) return;
+            
+            // Limpiar opciones existentes
+            selectElement.innerHTML = '<option value="">Seleccionar bookmaker...</option>';
+            
+            // Agregar bookmakers activos
+            availableBookmakers.forEach(bookmaker => {
+                const option = document.createElement('option');
+                option.value = bookmaker.id;
+                option.textContent = `${bookmaker.name} ${bookmaker.recomendado ? '(Recomendado)' : ''}`;
+                selectElement.appendChild(option);
+            });
+            
+             // No seleccionar ningún bookmaker por defecto
+             // El usuario debe elegir manualmente
+        }
+
+        // Mostrar/ocultar loading
+        function showLoading(show) {
+            document.getElementById('loadingTable').style.display = show ? 'block' : 'none';
+        }
+
+        // Renderizar tabla de bookmakers
+        function renderBookmakers() {
+            const tbody = document.getElementById('bookmakersTableBody');
+            tbody.innerHTML = '';
+
+            bookmakers.forEach(bookmaker => {
+                const row = document.createElement('tr');
+                
+                // Generar HTML para el logo
+                let logoHtml = '<div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 8px;">';
+                if (bookmaker.url_image) {
+                    logoHtml += `<img src="${bookmaker.url_image}" alt="${bookmaker.name}" style="max-width: 40px; max-height: 40px; object-fit: contain; border-radius: 4px;" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=&quot;fas fa-image&quot; style=&quot;color: #999;&quot;></i>';">`;
+                } else {
+                    logoHtml += '<i class="fas fa-image" style="color: #999;"></i>';
+                }
+                logoHtml += '</div>';
+                
+                row.innerHTML = `
+                    <td>${bookmaker.id}</td>
+                    <td>${logoHtml}</td>
+                    <td><strong>${bookmaker.name}</strong></td>
+                    <td>${bookmaker.description || '-'}</td>
+                    <td>
+                        <span class="status-badge ${bookmaker.active ? 'status-active' : 'status-inactive'}">
+                            ${bookmaker.active ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+                    <td>
+                        ${bookmaker.recomendado ? 
+                            '<span class="status-badge status-recommended">Recomendado</span>' : 
+                            '-'
+                        }
+                    </td>
+                    <td>
+                        <span style="font-family: monospace; font-size: 0.8rem;">
+                            ${bookmaker.url_websocket ? 'Conectado' : 'No configurado'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn btn-warning btn-sm" onclick="editBookmaker(${bookmaker.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteBookmaker(${bookmaker.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const total = bookmakers.length;
+            const active = bookmakers.filter(b => b.active).length;
+            const recommended = bookmakers.filter(b => b.recomendado).length;
+
+            document.getElementById('totalBookmakers').textContent = total;
+            document.getElementById('activeBookmakers').textContent = active;
+            document.getElementById('recommendedBookmakers').textContent = recommended;
+            
+            // Actualizar URLs dinámicas
+            updateDynamicUrls();
+        }
+
+        // Obtener URL base dinámicamente
+        function getBaseUrl() {
+            return window.location.origin;
+        }
+
+        // Obtener URL del WebSocket dinámicamente
+        function getWebSocketUrl() {
+            const origin = window.location.origin;
+            return origin.replace('http://', 'ws://').replace('https://', 'wss://');
+        }
+
+        // Actualizar URLs dinámicas
+        function updateDynamicUrls() {
+            const dynamicUrlsContainer = document.getElementById('dynamicUrls');
+            if (!dynamicUrlsContainer) return;
+
+            let html = '';
+            const baseUrl = getBaseUrl();
+            
+            bookmakers.forEach(bookmaker => {
+                html += `
+                    <div class="api-endpoint">
+                        <h4 style="margin: 0 0 10px 0; color: #333;">${bookmaker.name} (ID: ${bookmaker.id})</h4>
+                        <div style="display: grid; gap: 10px;">
+                            <div class="api-example">
+                                <strong>Rondas:</strong> 
+                                <a href="${baseUrl}/api/aviator/rounds/${bookmaker.id}?limit=1" target="_blank">
+                                    ${baseUrl}/api/aviator/rounds/${bookmaker.id}?limit=1
+                                </a>
+                            </div>
+                            <div class="api-example">
+                                <strong>Detalles:</strong> 
+                                <a href="${baseUrl}/api/aviator/bookmakers/${bookmaker.id}" target="_blank">
+                                    ${baseUrl}/api/aviator/bookmakers/${bookmaker.id}
+                                </a>
+                            </div>
+                            <div class="api-example">
+                                <strong>Historial:</strong> 
+                                <a href="${baseUrl}/api/aviator/bookmakers/${bookmaker.id}/history" target="_blank">
+                                    ${baseUrl}/api/aviator/bookmakers/${bookmaker.id}/history
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            dynamicUrlsContainer.innerHTML = html;
+        }
+
+        // Abrir modal
+        function openModal(bookmaker = null) {
+            const modal = document.getElementById('bookmakerModal');
+            const form = document.getElementById('bookmakerForm');
+            const title = document.getElementById('modalTitle');
+            const submitText = document.getElementById('submitButtonText');
+
+            if (bookmaker) {
+                editingId = bookmaker.id;
+                title.textContent = 'Editar Bookmaker';
+                submitText.textContent = 'Actualizar';
+                fillForm(bookmaker);
+            } else {
+                editingId = null;
+                title.textContent = 'Nuevo Bookmaker';
+                submitText.textContent = 'Guardar';
+                form.reset();
+                document.getElementById('active').checked = true;
+            }
+
+            modal.style.display = 'block';
+        }
+
+         // Llenar formulario para edición
+         function fillForm(bookmaker) {
+             document.getElementById('bookmakerId').value = bookmaker.id;
+             document.getElementById('name').value = bookmaker.name || '';
+             document.getElementById('description').value = bookmaker.description || '';
+             document.getElementById('recomendado').checked = bookmaker.recomendado || false;
+             document.getElementById('active').checked = bookmaker.active !== false;
+             document.getElementById('url_websocket').value = bookmaker.url_websocket || '';
+             document.getElementById('first_message').value = bookmaker.first_message || '';
+             document.getElementById('second_message').value = bookmaker.second_message || '';
+             document.getElementById('third_message').value = bookmaker.third_message || '';
+             document.getElementById('decoder_type').value = bookmaker.decoder_type || 'auto';
+             
+             // Manejar imagen
+             if (bookmaker.url_image) {
+                 document.getElementById('selected_image').value = bookmaker.url_image;
+                 
+                 // Si es un logo de la API, seleccionarlo
+                 if (bookmaker.url_image.startsWith('/api/logos/')) {
+                     const logoOptions = document.querySelectorAll('.logo-option');
+                     
+                     logoOptions.forEach(option => {
+                        const img = option.querySelector('img');
+                        if (img && img.src === bookmaker.url_image) {
+                            option.classList.add('selected');
+                        } else {
+                            option.classList.remove('selected');
+                        }
+                     });
+                     
+                     // Ocultar preview personalizado
+                     const customPreview = document.getElementById('customImagePreview');
+                     if (customPreview) {
+                         customPreview.style.display = 'none';
+                     }
+                 } else {
+                     // Si es imagen personalizada (URL de upload), mostrarla
+                     const customPreview = document.getElementById('customImagePreview');
+                     const previewImg = document.getElementById('previewImg');
+                     
+                     if (customPreview && previewImg) {
+                         previewImg.src = bookmaker.url_image;
+                         customPreview.style.display = 'block';
+                     }
+                     
+                     // Deseleccionar logos pre-cargados
+                     document.querySelectorAll('.logo-option').forEach(option => {
+                         option.classList.remove('selected');
+                     });
+                 }
+             }
+         }
+
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('bookmakerModal').style.display = 'none';
+            document.getElementById('bookmakerForm').reset();
+            editingId = null;
+            
+            // Limpiar selecciones de imagen
+            document.querySelectorAll('.logo-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            const customPreview = document.getElementById('customImagePreview');
+            if (customPreview) {
+                customPreview.style.display = 'none';
+            }
+            
+            document.getElementById('selected_image').value = '';
+        }
+
+        // Editar bookmaker
+        function editBookmaker(id) {
+            const bookmaker = bookmakers.find(b => b.id === id);
+            if (bookmaker) {
+                openModal(bookmaker);
+            }
+        }
+
+        // Eliminar bookmaker
+        async function deleteBookmaker(id) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este bookmaker?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/aviator/bookmakers/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    showSuccess('Bookmaker eliminado correctamente');
+                    loadBookmakers();
+                } else {
+                    throw new Error('Error al eliminar el bookmaker');
+                }
+            } catch (error) {
+                showError('Error al eliminar el bookmaker: ' + error.message);
+            }
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('bookmakerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Convertir checkboxes a boolean
+            data.recomendado = data.recomendado === 'on';
+            data.active = data.active === 'on';
+            
+            // Asegurar que decoder_type tenga un valor
+            if (!data.decoder_type) {
+                data.decoder_type = 'auto';
+            }
+
+            try {
+                let response;
+                if (editingId) {
+                    // Actualizar
+                    response = await fetch(`/api/aviator/bookmakers/${editingId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    // Crear
+                    response = await fetch('/api/aviator/bookmakers', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                }
+
+                if (response.ok) {
+                    showSuccess(editingId ? 'Bookmaker actualizado correctamente' : 'Bookmaker creado correctamente');
+                    closeModal();
+                    loadBookmakers();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Error al guardar el bookmaker');
+                }
+            } catch (error) {
+                showError('Error al guardar el bookmaker: ' + error.message);
+            }
+        });
+
+        // Mostrar mensaje de éxito
+        function showSuccess(message) {
+            const alert = document.getElementById('successAlert');
+            const messageSpan = document.getElementById('successMessage');
+            messageSpan.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // Mostrar mensaje de error
+        function showError(message) {
+            const alert = document.getElementById('errorAlert');
+            const messageSpan = document.getElementById('errorMessage');
+            messageSpan.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookmakerModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+         // Toggle documentación de API
+         function toggleApiDocs() {
+             const apiDocs = document.getElementById('apiDocumentation');
+             const toggleText = document.getElementById('toggleApiText');
+             
+             if (apiDocs.style.display === 'none') {
+                 apiDocs.style.display = 'block';
+                 toggleText.textContent = 'Ocultar Rutas';
+             } else {
+                 apiDocs.style.display = 'none';
+                 toggleText.textContent = 'Mostrar Rutas';
+             }
+         }
+
+         // Cargar logos disponibles
+         async function loadAvailableLogos() {
+             const logoGrid = document.getElementById('logoGrid');
+             if (!logoGrid) return;
+
+              try {
+                  // Cargar TODOS los logos (por defecto + personalizados) desde la API
+                  const response = await fetch('/api/logos');
+                  const logos = await response.json();
+                 
+                 logoGrid.innerHTML = '';
+
+                 logos.forEach(logo => {
+                     const logoOption = document.createElement('div');
+                     logoOption.className = 'logo-option';
+                     logoOption.onclick = (e) => {
+                         // Solo seleccionar si no se hizo clic en el botón de eliminar
+                         if (!e.target.classList.contains('logo-delete-btn')) {
+                             selectLogo(logoOption, logo);
+                         }
+                     };
+                     
+                     // Mostrar botón de eliminar para todos los logos
+                     const deleteButton = `
+                         <div class="logo-actions">
+                             <button class="logo-delete-btn" onclick="deleteLogo(${logo.id}, '${logo.name}', event)">
+                                 <i class="fas fa-trash"></i>
+                             </button>
+                         </div>
+                     `;
+                     
+                     logoOption.innerHTML = `
+                         <img src="${logo.url_path}" alt="${logo.name}" onerror="this.style.display='none'">
+                         <div class="logo-name">${logo.name}</div>
+                         ${deleteButton}
+                     `;
+                     
+                     logoGrid.appendChild(logoOption);
+                 });
+             } catch (error) {
+                 console.error('Error cargando logos:', error);
+                 logoGrid.innerHTML = '<p style="color: #666; text-align: center;">Error cargando logos</p>';
+             }
+         }
+
+         // Seleccionar logo
+         function selectLogo(selectedElement, logo) {
+             // Remover selección anterior
+             document.querySelectorAll('.logo-option').forEach(option => {
+                 option.classList.remove('selected');
+             });
+
+             // Seleccionar nuevo logo
+             selectedElement.classList.add('selected');
+             
+             // Ocultar preview de imagen personalizada
+             const customPreview = document.getElementById('customImagePreview');
+             if (customPreview) {
+                 customPreview.style.display = 'none';
+             }
+
+             // Limpiar input de imagen personalizada
+             const customImageInput = document.getElementById('custom_image');
+             if (customImageInput) {
+                 customImageInput.value = '';
+             }
+
+             // Guardar imagen seleccionada
+             document.getElementById('selected_image').value = logo.url_path;
+             
+             console.log('Logo seleccionado:', logo.name, logo.url_path);
+         }
+
+         // Preview de imagen personalizada
+         async function previewCustomImage(input) {
+             if (input.files && input.files[0]) {
+                 const file = input.files[0];
+                 
+                 // Validar tipo de archivo
+                 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                 if (!allowedTypes.includes(file.type)) {
+                     showError('Solo se permiten archivos de imagen (JPEG, PNG, GIF, WebP)');
+                     input.value = '';
+                     return;
+                 }
+                 
+                 // Validar tamaño (5MB máximo)
+                 const maxSize = 5 * 1024 * 1024; // 5MB
+                 if (file.size > maxSize) {
+                     showError('El archivo es demasiado grande. Máximo 5MB');
+                     input.value = '';
+                     return;
+                 }
+                 
+                 try {
+                     // Mostrar preview inmediato
+                     const reader = new FileReader();
+                     reader.onload = function(e) {
+                         const preview = document.getElementById('customImagePreview');
+                         const previewImg = document.getElementById('previewImg');
+                         
+                         if (preview && previewImg) {
+                             previewImg.src = e.target.result;
+                             preview.style.display = 'block';
+                             
+                             // Deseleccionar logos pre-cargados
+                             document.querySelectorAll('.logo-option').forEach(option => {
+                                 option.classList.remove('selected');
+                             });
+                         }
+                     };
+                     reader.readAsDataURL(file);
+                     
+                     // Usar el nombre del archivo sin extensión como nombre del logo
+                     const fileName = file.name;
+                     const nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+                     const logoName = nameWithoutExt.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                     
+                     // Verificar si ya existe un logo con ese nombre
+                     try {
+                         const checkResponse = await fetch(`/api/logos/check/${logoName}`);
+                         if (checkResponse.ok) {
+                             const exists = await checkResponse.json();
+                             if (exists.exists) {
+                                 const confirmReplace = confirm(`Ya existe un logo con el nombre "${logoName}". ¿Deseas reemplazarlo?`);
+                                 if (!confirmReplace) {
+                                     return; // Cancelar subida
+                                 }
+                             }
+                         }
+                     } catch (error) {
+                         console.log('No se pudo verificar si existe el logo, continuando...');
+                     }
+                     
+                     // Subir archivo al servidor como logo
+                     const formData = new FormData();
+                     formData.append('logo', file);
+                     formData.append('name', logoName);
+                     
+                     const response = await fetch('/api/logos', {
+                         method: 'POST',
+                         body: formData
+                     });
+                     
+                     if (response.ok) {
+                         const result = await response.json();
+                         console.log('Logo creado exitosamente:', result);
+                         
+                         // Guardar URL de la imagen subida
+                         document.getElementById('selected_image').value = result.url_path;
+                         
+                         // Recargar la lista de logos disponibles
+                         await loadAvailableLogos();
+                         
+                         // Seleccionar automáticamente el logo recién creado
+                         const newLogo = { name: result.name, url_path: result.url_path, is_default: false };
+                         const logoOptions = document.querySelectorAll('.logo-option');
+                         logoOptions.forEach(option => {
+                             const img = option.querySelector('img');
+                             if (img && img.src === result.url_path) {
+                                 selectLogo(option, newLogo);
+                             }
+                         });
+                         
+                         showSuccess('Logo guardado correctamente');
+                     } else {
+                         const error = await response.json();
+                         throw new Error(error.message || 'Error subiendo imagen');
+                     }
+                     
+                 } catch (error) {
+                     console.error('Error subiendo imagen:', error);
+                     showError('Error subiendo imagen: ' + error.message);
+                     
+                     // Limpiar preview y input
+                     const preview = document.getElementById('customImagePreview');
+                     if (preview) {
+                         preview.style.display = 'none';
+                     }
+                     input.value = '';
+                     document.getElementById('selected_image').value = '';
+                 }
+             }
+         }
+
+         // Eliminar logo
+         async function deleteLogo(logoId, logoName, event) {
+             event.stopPropagation(); // Evitar que se seleccione el logo
+             
+             // Verificar si es un logo por defecto
+             const isDefaultLogo = ['1win', '1xslots', 'bet365', 'betplay', 'betwinner'].includes(logoName);
+             
+             let confirmMessage = `¿Estás seguro de que quieres eliminar el logo "${logoName}"?\n\nEsta acción no se puede deshacer y afectará a todos los bookmakers que usen este logo.`;
+             
+             if (isDefaultLogo) {
+                 confirmMessage += `\n\n⚠️ ADVERTENCIA: Este es un logo por defecto del sistema. Si lo eliminas, tendrás que volver a subirlo manualmente para restaurarlo.`;
+             }
+             
+             const confirmDelete = confirm(confirmMessage);
+             
+             if (!confirmDelete) {
+                 return;
+             }
+             
+             try {
+                 const response = await fetch(`/api/logos/${logoId}`, {
+                     method: 'DELETE',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     }
+                 });
+                 
+                 if (response.ok) {
+                     showSuccess(`Logo "${logoName}" eliminado correctamente`);
+                     
+                     // Recargar la lista de logos
+                     await loadAvailableLogos();
+                     
+                     // Limpiar selección si el logo eliminado estaba seleccionado
+                     const selectedImage = document.getElementById('selected_image');
+                     if (selectedImage && selectedImage.value.includes(logoName)) {
+                         selectedImage.value = '';
+                         document.querySelectorAll('.logo-option').forEach(option => {
+                             option.classList.remove('selected');
+                         });
+                     }
+                 } else {
+                     const errorData = await response.json();
+                     throw new Error(errorData.message || 'Error al eliminar el logo');
+                 }
+             } catch (error) {
+                 console.error('Error eliminando logo:', error);
+                 showError('Error al eliminar el logo: ' + error.message);
+             }
+         }
+         
+         // Restaurar logos por defecto
+         async function restoreDefaultLogos() {
+             const confirmRestore = confirm(`¿Estás seguro de que quieres restaurar los logos por defecto?\n\nEsto creará los logos del sistema (1win, 1xslots, bet365, betplay, betwinner) si no existen.`);
+             
+             if (!confirmRestore) {
+                 return;
+             }
+             
+             try {
+                 const response = await fetch('/api/logos/initialize-defaults', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     }
+                 });
+                 
+                 if (response.ok) {
+                     const result = await response.json();
+                     showSuccess(`Logos por defecto restaurados: ${result.restored} logos creados`);
+                     
+                     // Recargar la lista de logos
+                     await loadAvailableLogos();
+                 } else {
+                     const errorData = await response.json();
+                     throw new Error(errorData.message || 'Error al restaurar los logos');
+                 }
+             } catch (error) {
+                 console.error('Error restaurando logos:', error);
+                 showError('Error al restaurar los logos: ' + error.message);
+             }
+         }
+
+    </script>
+</body>
+</html>
